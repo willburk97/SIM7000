@@ -7,3 +7,5 @@ Currently using a standard activated Verizon 4G/LTE sim card out of an iPhone 6S
 
 Note: While doing initial testing I was unable to succesfully send a text or make a call.  I think Verizon may not be allowing the
 SIM7000A on the voice/sms part of the network.  Internet access is working.
+
+Note: The code implies GPRS is being used for data. Isn't that 2G or 3G?
