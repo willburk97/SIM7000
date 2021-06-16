@@ -47,9 +47,9 @@ Adafruit_MQTT_Publish feed_charging = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME 
 uint8_t readline(char *buff, uint8_t maxbuff, uint16_t timeout = 0);
 char imei[16] = {0}; // Use this for device ID
 uint8_t type;
-uint16_t battLevel = 0; // Battery level (percentage)
+uint16_t battLevel = 0; // Battery voltage in mV
 uint8_t counter = 0;
-char battBuff[6] = "3.345"; // Was 12
+char battBuff[6] = "3.345"; // Starting value for testing
 
 void setup() {
   Serial.begin(9600);
