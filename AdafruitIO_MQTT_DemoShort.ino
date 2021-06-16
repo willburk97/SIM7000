@@ -13,10 +13,6 @@
 #include "Adafruit_MQTT.h"
 #include "Adafruit_MQTT_FONA.h"
 
-#if defined(ARDUINO_SAMD_ZERO) && defined(SERIAL_PORT_USBVIRTUAL)
-  #define Serial SERIAL_PORT_USBVIRTUAL
-#endif
-
 #define SIMCOM_7000
 
 /************************* PIN DEFINITIONS *********************************/
@@ -30,18 +26,9 @@
 #include <SoftwareSerial.h>
 SoftwareSerial fonaSS = SoftwareSerial(FONA_TX, FONA_RX);
 
-
 SoftwareSerial *fonaSerial = &fonaSS;
 
-//#ifdef SIMCOM_2G
-//  Adafruit_FONA fona = Adafruit_FONA(FONA_RST);
-  
-//#elif defined(SIMCOM_3G)
-//  Adafruit_FONA_3G fona = Adafruit_FONA_3G(FONA_RST);
-  
-//#elif defined(SIMCOM_7000) || defined(SIMCOM_7070) || defined(SIMCOM_7500) || defined(SIMCOM_7600)
   Adafruit_FONA_LTE fona = Adafruit_FONA_LTE();
-//#endif
 
 /************************* MQTT SETUP *********************************/
 #define AIO_SERVER      "io.adafruit.com"
@@ -67,8 +54,7 @@ char battBuff[6] = "3.345"; // Was 12
 void setup() {
   Serial.begin(9600);
   Serial.println(F("*** SIMComExample ***"));
-
-  
+ 
   pinMode(FONA_RST, OUTPUT);
   digitalWrite(FONA_RST, HIGH); // Default state
 
@@ -76,19 +62,13 @@ void setup() {
   moduleSetup(); // Establishes first-time serial comm and prints IMEI
   fona.setFunctionality(1); // AT+CFUN=1
   fona.setNetworkSettings(F("vzwinternet")); // For Verizon SIM card
-//fona.setHTTPSRedirect(true);
 
-
-
-  #if !defined(SIMCOM_3G) && !defined(SIMCOM_7500) && !defined(SIMCOM_7600)
     if (!fona.enableGPRS(false)) Serial.println(F("Faildisdata"));
-    
     while (!fona.enableGPRS(true)) {
       Serial.println(F("F en data"));
       delay(2000); // Retry every 2s
     }
     Serial.println(F("En data!"));
-  #endif
 
 }
 
@@ -101,9 +81,6 @@ void loop() {
 
   battLevel = readVcc();
   dtostrf(battLevel,4,0,battBuff);
-
-#ifdef turnOffShield
-#endif
 
   MQTT_connect();
 
@@ -119,7 +96,7 @@ void moduleSetup() {
   fonaSS.println("AT+IPR=9600"); // Set baud rate
   delay(100); // Short pause to let the command run
   fonaSS.begin(9600);
-  if (! fona.begin(fonaSS)) {
+  if (!fona.begin(fonaSS)) {
     Serial.println(F("t find FONA"));
     while (1); // Don't proceed if it couldn't find the device
   }
@@ -162,7 +139,7 @@ void MQTT_connect() {
     Serial.println(mqtt.connectErrorString(ret));
     Serial.println("Retg MQTTn 5 ses...");
     mqtt.disconnect();
-    delay(30000);  // wait 5 seconds
+    delay(5000);  // wait 5 seconds
   }
   Serial.println("MQTT Connected!");
 }
